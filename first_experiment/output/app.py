@@ -32,9 +32,8 @@ with gr.Blocks() as demo:
     
     def update_output(directory, extensions):
         msg, sorted_count, unsorted_count = sort_files(directory, extensions)
-        output.update(msg)
-        return sorted_count, unsorted_count
-    
+        return msg  # Return the message to be displayed in the Markdown output
+
     sort_button.click(fn=update_output, inputs=[directory_input, extensions_input], outputs=output)
     reset_button.click(fn=reset_changes, inputs=directory_input, outputs=output)
 
