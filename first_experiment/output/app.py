@@ -1,35 +1,41 @@
 import gradio as gr
-from Sorter import Sorter
 import os
+from Sorter import Sorter
 
-def sort_files_ui(directory, extensions):
+def sort_files(directory, extensions):
+    if not directory or not extensions:
+        return "Directory or extensions cannot be empty.", 0, 0
+    
     try:
-        sorter = Sorter(directory, extensions.split(','))
+        sorter = Sorter(directory, extensions.split(","))
         sorted_count, unsorted_count = sorter.sort_files()
-        return f"Sorted files: {sorted_count}, Unsorted files: {unsorted_count}"
+        return f"Sorted {sorted_count} files.", sorted_count, unsorted_count
     except FileNotFoundError as e:
-        return str(e)
-    except ValueError as e:
-        return str(e)
+        return str(e), 0, 0
+    except Exception as e:
+        return str(e), 0, 0
 
+def reset_changes(directory):
+    # Placeholder for reset functionality
+    return "Reset functionality not implemented.", 0, 0
 
-with gr.Blocks(title="File Sorter") as demo:
-    gr.Markdown("# File Sorter\nSort files in a given directory by their extensions.")
+with gr.Blocks() as demo:
+    gr.Markdown("### File Sorter")
     with gr.Row():
-        directory_input = gr.Textbox(label="Directory", placeholder="Enter the directory path")
-        extensions_input = gr.Textbox(label="File Extensions (comma separated)", placeholder="e.g. txt, jpg, pdf")
+        directory_input = gr.Textbox(label="Directory", placeholder="Enter the directory to sort files...")
+        extensions_input = gr.Textbox(label="Extensions (comma-separated)", placeholder="Enter file extensions...")
+    
     sort_button = gr.Button("Sort Files")
-    output_text = gr.Textbox(label="Result", interactive=False)
+    reset_button = gr.Button("Reset Changes")
+    
+    output = gr.Markdown("Output will be displayed here.")
+    
+    def update_output(directory, extensions):
+        msg, sorted_count, unsorted_count = sort_files(directory, extensions)
+        output.update(msg)
+        return sorted_count, unsorted_count
+    
+    sort_button.click(fn=update_output, inputs=[directory_input, extensions_input], outputs=output)
+    reset_button.click(fn=reset_changes, inputs=directory_input, outputs=output)
 
-    def on_sort_click(directory, extensions):
-        return sort_files_ui(directory, extensions)
-
-    sort_button.click(
-        fn=on_sort_click,
-        inputs=[directory_input, extensions_input],
-        outputs=output_text
-    )
-
-if __name__ == "__main__":
-    demo.launch(server_name="127.0.0.1", server_port=7860,share=False, debug=True)
-    print("Gradio app is running. Open your browser to http://127.0.0.1:7860 to access it.")
+demo.launch()

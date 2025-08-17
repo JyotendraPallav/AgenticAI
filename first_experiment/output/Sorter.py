@@ -1,90 +1,108 @@
 import os
 import shutil
+from typing import List, Tuple, Dict
 
 class Sorter:
-    def __init__(self, directory: str, extensions: list):
+    """
+    A class to sort files within a specified directory based on their file extensions.
+    """
+
+    def __init__(self, directory: str, extensions: List[str]):
         """
-        Initialize the Sorter with a directory and a list of file extensions.
-        
-        :param directory: The path of the directory containing files to be sorted.
-        :param extensions: A list of file extensions to sort the files by.
+        Initialize the Sorter with a directory and a list of extensions.
+
+        :param directory: The path of the directory to sort files in.
+        :param extensions: A list of file extensions to sort files by.
         """
         self.directory = directory
-        self.extensions = [ext.lower() for ext in extensions]  # Convert all extensions to lower case
+        self.extensions = extensions
+        self.extensions_set = {ext.lower() for ext in extensions}
         self.sorted_count = 0
         self.unsorted_count = 0
+        self.no_extension_count = 0
 
-    def sort_files(self):
+    def sort_files(self) -> Tuple[int, int]:
         """
-        Sort files in the specified directory based on the file extensions.
-        It creates subdirectories for each file extension and moves files accordingly.
-        It also handles various edge cases such as empty or non-existing directories.
-        
-        :return: A tuple of (number of files sorted, number of files that could not be sorted)
+        Sort the files in the specified directory based on their extensions.
+
+        :return: Tuple with the number of files sorted and number of files that could not be sorted.
         """
         if not os.path.exists(self.directory):
-            raise FileNotFoundError(f"The directory '{self.directory}' does not exist.")
-
+            raise FileNotFoundError(f"The specified directory does not exist: {self.directory}")
+        
         files = os.listdir(self.directory)
         if not files:
-            raise ValueError(f"The directory '{self.directory}' is empty.")
-
+            return 0, 0
+        
         for file in files:
             self._move_file(file)
-
-        return self.sorted_count, self.unsorted_count
-
-    def _move_file(self, file: str):
-        """
-        Move a single file to its corresponding subdirectory based on its extension.
         
-        :param file: The file name to be sorted.
+        return self.sorted_count, self.unsorted_count + self.no_extension_count
+
+    def _move_file(self, filename: str) -> None:
         """
-        source = os.path.join(self.directory, file)
-        if os.path.isfile(source):
-            name, ext = os.path.splitext(file)
-            ext = ext[1:].lower()  # Get the extension without the dot and to lower case
-            
-            if ext in self.extensions:
-                target_dir = os.path.join(self.directory, ext)
-                self._create_directory(target_dir)
-                self._move(source, target_dir, file)
-            elif ext == "":
-                self._handle_no_extension(source, name)
-            else:
+        Move a single file to its corresponding extension directory.
+
+        :param filename: The name of the file to move.
+        """
+        if os.path.isdir(os.path.join(self.directory, filename)):
+            return  # Skip directories
+        
+        file_path = os.path.join(self.directory, filename)
+        
+        # Extracting the extension
+        extension = self._get_file_extension(filename)
+        
+        if extension:
+            destination = os.path.join(self.directory, extension)
+            self._create_directory(destination)
+            try:
+                shutil.move(file_path, os.path.join(destination, filename))
+                self.sorted_count += 1
+            except Exception:
+                self.unsorted_count += 1
+        else:
+            no_ext_path = os.path.join(self.directory, "no_extension")
+            self._create_directory(no_ext_path)
+            try:
+                shutil.move(file_path, os.path.join(no_ext_path, filename))
+                self.no_extension_count += 1
+            except Exception:
                 self.unsorted_count += 1
 
-    def _handle_no_extension(self, source: str, name: str):
+    def _get_file_extension(self, filename: str) -> str:
         """
-        Handle files with no extension by moving them to 'no_extension' directory.
-        
-        :param source: The source path of the file with no extension.
-        :param name: The name of the file.
-        """
-        no_extension_dir = os.path.join(self.directory, 'no_extension')
-        self._create_directory(no_extension_dir)
-        self._move(source, no_extension_dir, name)
-    
-    def _move(self, source: str, target_dir: str, filename: str):
-        """
-        Move a file to the target directory.
-        
-        :param source: The source path of the file.
-        :param target_dir: The destination directory where the file needs to be moved.
-        :param filename: The name of the file being moved.
-        """
-        try:
-            shutil.move(source, os.path.join(target_dir, filename))
-            self.sorted_count += 1
-        except Exception as e:
-            self.unsorted_count += 1
-            print(f"Could not move '{filename}': {e}")
+        Get the last extension of a file in lowercase.
 
-    def _create_directory(self, target_dir: str):
+        :param filename: The name of the file.
+        :return: The lowercase file extension or an empty string if no extension exists.
         """
-        Create a directory if it does not exist.
-        
-        :param target_dir: The directory path to create.
+        parts = filename.rsplit('.', 1)
+        return parts[-1].lower() if len(parts) > 1 else ""
+
+    def _create_directory(self, path: str) -> None:
         """
-        if not os.path.exists(target_dir):
-            os.makedirs(target_dir)
+        Create a directory if it does not already exist.
+
+        :param path: The path of the directory to create.
+        """
+        os.makedirs(path, exist_ok=True)
+
+    def reset_changes(self) -> None:
+        """
+        Reset the changes by moving all sorted files back to the original directory.
+        This is a placeholder and would need implementation.
+        """
+        raise NotImplementedError("Reset function is not yet implemented.")
+
+    def get_summary(self) -> Dict[str, int]:
+        """
+        Get a summary of sorted and unsorted files.
+
+        :return: A dictionary containing the counts of sorted and unsorted files.
+        """
+        return {
+            "sorted_count": self.sorted_count,
+            "unsorted_count": self.unsorted_count,
+            "no_extension_count": self.no_extension_count
+        }
