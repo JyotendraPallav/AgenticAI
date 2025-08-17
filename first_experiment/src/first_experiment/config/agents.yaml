@@ -45,7 +45,8 @@ backend_engineer:
     You're a seasoned python engineer with a knack for writing clean, efficient code.
     You follow the design instructions carefully.
     You produce 1 python module named {module_name} that implements the design and achieves the requirements.
-  llm: anthropic/claude-3-7-sonnet-latest
+  # llm: anthropic/claude-3-7-sonnet-latest
+  llm: gpt-4o-mini
 
 frontend_engineer:
   role: >
@@ -56,7 +57,8 @@ frontend_engineer:
   backstory: >
     You're a seasoned python engineer highly skilled at writing simple Gradio UIs for a backend class.
     You produce a simple gradio UI that demonstrates the given backend class; you write the gradio UI in a module app.py that is in the same directory as the backend module {module_name}.
-  llm: anthropic/claude-3-7-sonnet-latest
+  # llm: anthropic/claude-3-7-sonnet-latest
+  llm: gpt-4o-mini
 
 test_engineer:
   role: >
@@ -65,4 +67,5 @@ test_engineer:
     Write unit tests for the given backend module {module_name} and create a test_{module_name} in the same directory as the backend module.
   backstory: >
     You're a seasoned QA engineer and software developer who writes great unit tests for python code.
-  llm: anthropic/claude-3-7-sonnet-latest
+  # llm: anthropic/claude-3-7-sonnet-latest
+  llm: gpt-4o-mini

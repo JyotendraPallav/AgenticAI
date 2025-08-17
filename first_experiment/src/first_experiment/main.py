@@ -83,16 +83,16 @@ requirements = """
 A simple file sorting system that allows users to sort files based on their extensions.
 The system should allow users to specify a directory and a list of file extensions to sort.
 The system should create subdirectories for each file extension and move the files into the corresponding subdirectory.
-The system should handle cases where the specified directory does not exist or is empty.
-The system should be able to report the number of files sorted and the number of files that could not be sorted.
-The system should be able to handle files with no extension and move them to a separate "no_extension" subdirectory.
-The system should be able to handle files with multiple extensions and move them to the subdirectory corresponding to the last extension.
-The system should be able to handle files with uppercase extensions and move them to the subdirectory corresponding to the lowercase version of the extension.
-The system should be able to handle files with special characters in their names and move them to the corresponding subdirectory.
-The system should be able to handle files with spaces in their names and move them to the corresponding subdirectory.
-The system should be able to handle files with long names and move them to the corresponding subdirectory.
-The system should be able to handle files with hidden extensions and move them to the corresponding subdirectory.
-The system should be able to handle files with no name and move them to the corresponding subdirectory.
+# The system should handle cases where the specified directory does not exist or is empty.
+# The system should be able to report the number of files sorted and the number of files that could not be sorted.
+# The system should be able to handle files with no extension and move them to a separate "no_extension" subdirectory.
+# The system should be able to handle files with multiple extensions and move them to the subdirectory corresponding to the last extension.
+# The system should be able to handle files with uppercase extensions and move them to the subdirectory corresponding to the lowercase version of the extension.
+# The system should be able to handle files with special characters in their names and move them to the corresponding subdirectory.
+# The system should be able to handle files with spaces in their names and move them to the corresponding subdirectory.
+# The system should be able to handle files with long names and move them to the corresponding subdirectory.
+# The system should be able to handle files with hidden extensions and move them to the corresponding subdirectory.
+# The system should be able to handle files with no name and move them to the corresponding subdirectory.
 """
 module_name = "Sorter.py"
 class_name = "Sorter"
